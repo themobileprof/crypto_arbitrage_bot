@@ -1,6 +1,6 @@
 import ccxt
-from src.config.settings import KUCOIN_API_KEY, KUCOIN_API_SECRET, KUCOIN_API_PASSPHRASE
-from src.utils.logger import logger
+from config.settings import KUCOIN_API_KEY, KUCOIN_API_SECRET, KUCOIN_API_PASSPHRASE
+from utils.logger import logger
 
 class KuCoinHandler:
     def __init__(self):

@@ -1,4 +1,4 @@
-from src.config.settings import TRADING_CAPITAL, ALLOCATION_PERCENTAGE, STOP_LOSS_THRESHOLD
+from config.settings import TRADING_CAPITAL, ALLOCATION_PERCENTAGE, STOP_LOSS_THRESHOLD
 
 class PositionManager:
     @staticmethod

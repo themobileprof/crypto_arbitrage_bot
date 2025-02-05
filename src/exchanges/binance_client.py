@@ -1,6 +1,6 @@
 from binance.client import Client
-from src.config.settings import BINANCE_API_KEY, BINANCE_API_SECRET
-from src.utils.logger import logger
+from config.settings import BINANCE_API_KEY, BINANCE_API_SECRET
+from utils.logger import logger
 
 class BinanceHandler:
     def __init__(self):

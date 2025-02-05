@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.utils.file_handler import FileHandler
+from utils.file_handler import FileHandler
 from tabulate import tabulate
 
 class TradeLogger:

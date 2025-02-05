@@ -1,8 +1,8 @@
 import schedule
 import time
-from src.trading.arbitrage import ArbitrageTrader
-from src.utils.file_handler import FileHandler
-from src.config.settings import TRADING_INTERVAL
+from trading.arbitrage import ArbitrageTrader
+from utils.file_handler import FileHandler
+from config.settings import TRADING_INTERVAL
 
 def main():
     # Clear existing logs and files

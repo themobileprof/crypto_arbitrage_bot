@@ -1,10 +1,10 @@
 from datetime import datetime
-from src.exchanges.binance_client import BinanceHandler
-from src.exchanges.kucoin_client import KuCoinHandler
-from src.trading.position import PositionManager
-from src.reporting.trade_logger import TradeLogger
-from src.config.settings import ARBITRAGE_THRESHOLD
-from src.utils.logger import logger
+from exchanges.binance_client import BinanceHandler
+from exchanges.kucoin_client import KuCoinHandler
+from trading.position import PositionManager
+from reporting.trade_logger import TradeLogger
+from config.settings import ARBITRAGE_THRESHOLD
+from utils.logger import logger
 
 class ArbitrageTrader:
     def __init__(self):
