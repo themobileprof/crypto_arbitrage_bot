@@ -1,6 +1,6 @@
-pip freeze > requirements.txt
-binance
-bybit
-requests
-schedule
-tabulate
+python-binance==1.0.19 # For Binance API interactions
+python-dotenv==1.0.0   # For environment variable management
+schedule==1.2.0        # For periodic trading execution
+tabulate==0.9.0        # For formatted table output
+ccxt==4.1.13           # For KuCoin API interactions
+tox==4.11.4            # Test automation
