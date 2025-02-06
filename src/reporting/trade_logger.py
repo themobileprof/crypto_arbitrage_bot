@@ -3,6 +3,22 @@ from utils.file_handler import FileHandler
 from tabulate import tabulate
 
 class TradeLogger:
+    """
+    A class used to log trade information and save it to CSV files.
+    Attributes
+    ----------
+    file_handler : FileHandler
+        An instance of FileHandler to manage file operations.
+    headers : list
+        A list of headers for the trade data.
+    Methods
+    -------
+    __init__()
+        Initializes the TradeLogger with a FileHandler and headers.
+    log_trade(time, binance_price, kucoin_price, difference, profit)
+        Logs trade information, prints it in a table format, and saves it to CSV files.
+    
+    """
     def __init__(self):
         self.file_handler = FileHandler()
         self.headers = ["Time", "Binance Price", "KuCoin Price", 

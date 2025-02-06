@@ -7,14 +7,36 @@ from config.settings import ARBITRAGE_THRESHOLD
 from utils.logger import logger
 
 class ArbitrageTrader:
+    """
+    A class to represent an arbitrage trader that checks for arbitrage opportunities
+    between Binance and KuCoin exchanges and executes trades accordingly.
+    Attributes
+    ----------
+    binance : BinanceHandler
+        An instance of BinanceHandler to interact with Binance exchange.
+    kucoin : KuCoinHandler
+        An instance of KuCoinHandler to interact with KuCoin exchange.
+    position_manager : PositionManager
+        An instance of PositionManager to manage trading positions.
+    trade_logger : TradeLogger
+        An instance of TradeLogger to log trade details.
+    Methods
+    -------
+    check_arbitrage_opportunity(binance_price, kucoin_price, threshold=ARBITRAGE_THRESHOLD):
+        Checks if there is an arbitrage opportunity based on the price difference
+        between Binance and KuCoin exchanges.
+    execute_trade():
+        Executes a trade if an arbitrage opportunity is detected, logs the trade,
+        and handles stop-loss conditions.
+    """
     def __init__(self):
         self.binance = BinanceHandler()
         self.kucoin = KuCoinHandler()
         self.position_manager = PositionManager()
         self.trade_logger = TradeLogger()
 
-    def check_arbitrage_opportunity(self, binance_price, kucoin_price, 
-                                  threshold=ARBITRAGE_THRESHOLD):
+    # 
+    def check_arbitrage_opportunity(self, binance_price, kucoin_price, threshold=ARBITRAGE_THRESHOLD):
         if not all([binance_price, kucoin_price]):
             return False
         
