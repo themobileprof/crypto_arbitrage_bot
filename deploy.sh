@@ -36,7 +36,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker &> /dev/null || ! docker compose version &> /dev/null; then
     echo -e "${RED}❌ Docker Compose is not installed!${NC}"
     echo "Please install Docker Compose first: https://docs.docker.com/compose/install/"
     exit 1
@@ -62,10 +62,10 @@ echo
 
 # Build and start the application (without nginx first)
 echo -e "${YELLOW}🔨 Building Docker image...${NC}"
-docker-compose build
+docker compose build
 
 echo -e "${YELLOW}🚀 Starting application...${NC}"
-docker-compose up -d crypto-arbitrage-bot
+docker compose up -d crypto-arbitrage-scheduler crypto-arbitrage-web
 
 # Wait for the container to be ready
 echo -e "${YELLOW}⏳ Waiting for application to start...${NC}"
@@ -73,11 +73,11 @@ sleep 10
 
 # Create dashboard user
 echo -e "${YELLOW}👤 Creating dashboard user...${NC}"
-docker-compose exec crypto-arbitrage-bot python src/main.py --create-user "$username" "$password"
+docker compose exec crypto-arbitrage-web python src/main.py --create-user "$username" "$password"
 
 # Start nginx with HTTP only
 echo -e "${YELLOW}🌐 Starting nginx with HTTP...${NC}"
-docker-compose --profile with-nginx up -d nginx
+docker compose --profile with-nginx up -d nginx
 
 # Check if certbot is available
 if command -v certbot &> /dev/null; then
@@ -85,13 +85,13 @@ if command -v certbot &> /dev/null; then
     echo "This will temporarily stop nginx to verify domain ownership..."
     
     # Stop nginx temporarily for certbot
-    docker-compose --profile with-nginx stop nginx
+    docker compose --profile with-nginx stop nginx
     
     # Run certbot
     sudo certbot certonly --standalone -d $DOMAIN --non-interactive --agree-tos --email admin@otomatiktech.com
     
     # Start nginx again
-    docker-compose --profile with-nginx up -d nginx
+    docker compose --profile with-nginx up -d nginx
     
     echo -e "${GREEN}✅ SSL certificate obtained successfully!${NC}"
 else
@@ -105,9 +105,9 @@ echo -e "${GREEN}🌐 Dashboard available at: https://$DOMAIN${NC}"
 echo -e "${GREEN}📊 Login with username: $username${NC}"
 echo ""
 echo -e "${YELLOW}📋 Useful commands:${NC}"
-echo "  View logs: docker-compose logs -f"
-echo "  Stop services: docker-compose down"
-echo "  Restart services: docker-compose restart"
+echo "  View logs: docker compose logs -f"
+echo "  Stop services: docker compose down"
+echo "  Restart services: docker compose restart"
 echo "  Update application: ./deploy.sh"
 echo "  Renew SSL: sudo certbot renew"
 echo ""

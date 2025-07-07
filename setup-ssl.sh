@@ -35,7 +35,7 @@ fi
 
 # Stop nginx temporarily
 echo -e "${YELLOW}⏸️  Stopping nginx temporarily...${NC}"
-docker-compose --profile with-nginx stop nginx 2>/dev/null || true
+docker compose --profile with-nginx stop nginx 2>/dev/null || true
 
 # Run certbot
 echo -e "${YELLOW}🔐 Obtaining SSL certificate...${NC}"
@@ -48,7 +48,7 @@ certbot certonly --standalone \
 
 # Start nginx again
 echo -e "${YELLOW}▶️  Starting nginx...${NC}"
-docker-compose --profile with-nginx up -d nginx
+docker compose --profile with-nginx up -d nginx
 
 # Test SSL certificate
 echo -e "${YELLOW}🧪 Testing SSL certificate...${NC}"

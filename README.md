@@ -121,10 +121,10 @@ For production deployment on a server, use Docker with Gunicorn WSGI server:
 4. **Start the services:**
     ```bash
     # Start both scheduler and web dashboard
-    docker-compose up -d
+    docker compose up -d
     
     # Or start with nginx reverse proxy and SSL
-    docker-compose --profile with-nginx up -d
+    docker compose --profile with-nginx up -d
     ```
 
 **Services:**
@@ -215,7 +215,7 @@ For production, replace the self-signed certificate with a proper SSL certificat
 
 ### Monitoring and Maintenance
 
-- **View logs:** `docker-compose logs -f` or `journalctl -u crypto-bot -f`
+- **View logs:** `docker compose logs -f` or `journalctl -u crypto-bot -f`
 - **Database backup:** `cp -r db/ backup-$(date +%Y%m%d)/`
 - **Update application:** Pull latest code and restart containers
 - **Health checks:** Monitor the dashboard endpoint for availability
