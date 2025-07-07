@@ -115,6 +115,12 @@ def run_scheduler(trader, dry_run):
 def run_web_dashboard(trader, dry_run):
     logger.info("🌐 Starting web dashboard...")
     
+    app = create_flask_app(trader, dry_run)
+    logger.info("✅ Web dashboard started successfully")
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
+
+def create_flask_app(trader, dry_run):
+    """Create and configure Flask app for both development and production"""
     app = Flask(__name__)
     app.secret_key = DASHBOARD_SECRET_KEY
     login_manager = LoginManager()
@@ -142,17 +148,62 @@ def run_web_dashboard(trader, dry_run):
                 logger.warning(f"❌ Failed login attempt for user: {username}")
                 flash('Invalid username or password')
         return render_template_string('''
-        <html><body>
-        <h2>Login</h2>
-        <form method="post">
-            Username: <input name="username"><br>
-            Password: <input name="password" type="password"><br>
-            <input type="submit" value="Login">
-        </form>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}<ul>{% for m in messages %}<li>{{ m }}</li>{% endfor %}</ul>{% endif %}
-        {% endwith %}
-        </body></html>
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Login - Crypto Arbitrage Dashboard</title>
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+            <style>
+                body { background: linear-gradient(135deg, #ff6f00 0%, #f50057 100%); min-height: 100vh; }
+                .card { margin-top: 8vh; }
+                .brand-logo { font-weight: bold; }
+            </style>
+        </head>
+        <body>
+        <nav class="pink accent-3">
+            <div class="nav-wrapper container">
+                <a href="#" class="brand-logo">Crypto Arbitrage</a>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6 offset-m3">
+                    <div class="card white z-depth-3">
+                        <div class="card-content">
+                            <span class="card-title center-align pink-text text-accent-3">Login</span>
+                            <form method="post">
+                                <div class="input-field">
+                                    <input id="username" name="username" type="text" required>
+                                    <label for="username">Username</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="password" name="password" type="password" required>
+                                    <label for="password">Password</label>
+                                </div>
+                                <div class="center-align">
+                                    <button class="btn waves-effect waves-light pink accent-3" type="submit">Login
+                                        <i class="material-icons right">login</i>
+                                    </button>
+                                </div>
+                            </form>
+                            {% with messages = get_flashed_messages() %}
+                              {% if messages %}
+                                <ul class="collection red-text">
+                                  {% for m in messages %}<li class="collection-item">{{ m }}</li>{% endfor %}
+                                </ul>
+                              {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        </body>
+        </html>
         ''')
 
     @app.route('/logout')
@@ -169,27 +220,79 @@ def run_web_dashboard(trader, dry_run):
         metrics = trade_logger.get_metrics()
         trades = trade_logger.get_trades(since_days=30)
         return render_template_string('''
+        <!DOCTYPE html>
         <html>
-        <head><title>Crypto Arbitrage Dashboard</title></head>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Crypto Arbitrage Dashboard</title>
+            <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+            <style>
+                body { background: linear-gradient(135deg, #00bcd4 0%, #ffeb3b 100%); min-height: 100vh; }
+                .brand-logo { font-weight: bold; }
+                .card { margin-top: 4vh; }
+                .metrics-list li { font-size: 1.2em; }
+                .table-container { overflow-x: auto; }
+            </style>
+        </head>
         <body>
-            <h1>Crypto Arbitrage Dashboard</h1>
-            <a href="/logout">Logout</a>
-            <form method="post" action="/run-trade">
-                <button type="submit">Run Arbitrage Check</button>
-            </form>
-            <h2>Metrics (last 30 days)</h2>
-            <ul>
-                <li>Total Trades: {{ metrics.trade_count }}</li>
-                <li>Total Profit: ${{ '%.2f' % metrics.total_profit }}</li>
-                <li>Average Profit: ${{ '%.2f' % metrics.avg_profit }}</li>
-            </ul>
-            <h2>Trade History (last 30 days)</h2>
-            <table border="1">
-                <tr><th>Time</th><th>Binance Price</th><th>KuCoin Price</th><th>Difference</th><th>Profit</th><th>Result</th><th>Recommendation</th></tr>
-                {% for trade in trades %}
-                <tr>{% for item in trade[1:] %}<td>{{ item }}</td>{% endfor %}</tr>
-                {% endfor %}
-            </table>
+        <nav class="cyan accent-4">
+            <div class="nav-wrapper container">
+                <a href="#" class="brand-logo">Crypto Arbitrage</a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li><a href="/logout"><i class="material-icons left">logout</i>Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m10 offset-m1">
+                    <div class="card white z-depth-3">
+                        <div class="card-content">
+                            <span class="card-title cyan-text text-accent-4 center-align">Dashboard</span>
+                            <form method="post" action="/run-trade" class="center-align" style="margin-bottom: 2em;">
+                                <button class="btn-large waves-effect waves-light pink accent-3" type="submit">
+                                    <i class="material-icons left">autorenew</i>Run Arbitrage Check
+                                </button>
+                            </form>
+                            <h5 class="cyan-text text-accent-4">Metrics (last 30 days)</h5>
+                            <ul class="metrics-list">
+                                <li><b>Total Trades:</b> {{ metrics.trade_count }}</li>
+                                <li><b>Total Profit:</b> <span class="green-text">${{ '%.2f' % metrics.total_profit }}</span></li>
+                                <li><b>Average Profit:</b> <span class="blue-text">${{ '%.2f' % metrics.avg_profit }}</span></li>
+                            </ul>
+                            <h5 class="cyan-text text-accent-4">Trade History (last 30 days)</h5>
+                            <div class="table-container">
+                                <table class="striped responsive-table">
+                                    <thead>
+                                        <tr class="yellow lighten-4">
+                                            <th>Time</th>
+                                            <th>Binance Price</th>
+                                            <th>KuCoin Price</th>
+                                            <th>Difference</th>
+                                            <th>Profit</th>
+                                            <th>Result</th>
+                                            <th>Recommendation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for trade in trades %}
+                                        <tr>
+                                            {% for item in trade[1:] %}
+                                            <td>{{ item }}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         </body>
         </html>
         ''', metrics=metrics, trades=trades)
@@ -201,8 +304,7 @@ def run_web_dashboard(trader, dry_run):
         result = trader.execute_trade(dry_run=dry_run, return_data=True)
         return redirect(url_for('dashboard'))
 
-    logger.info("✅ Web dashboard started successfully")
-    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
+    return app
 
 def main():
     parser = argparse.ArgumentParser(description='Crypto Arbitrage Bot')

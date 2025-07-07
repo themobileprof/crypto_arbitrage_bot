@@ -98,7 +98,7 @@ This project is a crypto arbitrage bot that trades Bitcoin (BTC) between Binance
 
 ### Docker Deployment (Recommended)
 
-For production deployment on a server, use Docker:
+For production deployment on a server, use Docker with Gunicorn WSGI server:
 
 1. **Clone the repository on your server:**
     ```bash
@@ -112,11 +112,32 @@ For production deployment on a server, use Docker:
     # Edit .env with your API credentials
     ```
 
-3. **Make the deployment script executable and run it:**
+3. **Create persistent directories:**
     ```bash
-    chmod +x deploy.sh
-    ./deploy.sh
+    sudo mkdir -p /var/www/crypto_arbitrage_bot/{db,logs,nginx-logs}
+    sudo chown -R $USER:$USER /var/www/crypto_arbitrage_bot
     ```
+
+4. **Start the services:**
+    ```bash
+    # Start both scheduler and web dashboard
+    docker-compose up -d
+    
+    # Or start with nginx reverse proxy and SSL
+    docker-compose --profile with-nginx up -d
+    ```
+
+**Services:**
+- `crypto-arbitrage-scheduler`: Runs the trading bot with scheduled arbitrage checks
+- `crypto-arbitrage-web`: Serves the web dashboard using Gunicorn WSGI server
+- `nginx` (optional): Reverse proxy with SSL termination
+
+**Production Features:**
+- Uses Gunicorn WSGI server instead of Flask development server
+- Separate services for trading and web dashboard
+- Automatic health checks and restart policies
+- Persistent data storage with volume mounts
+- Nginx reverse proxy with SSL support
 
 ### Manual Server Setup
 

@@ -7,4 +7,5 @@ Flask
 Flask-Login
 werkzeug
 requests
+gunicorn
 # sqlite3 is part of the Python standard library
