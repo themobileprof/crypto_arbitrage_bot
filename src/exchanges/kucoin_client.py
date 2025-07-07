@@ -30,35 +30,61 @@ class KuCoinHandler:
             Placeholder method for placing a buy order.
     """
     def __init__(self):
-        self.client = ccxt.kucoin({
-            'apiKey': KUCOIN_API_KEY,
-            'secret': KUCOIN_API_SECRET,
-            'password': KUCOIN_API_PASSPHRASE,
-        })
+        try:
+            self.client = ccxt.kucoin({
+                'apiKey': KUCOIN_API_KEY,
+                'secret': KUCOIN_API_SECRET,
+                'password': KUCOIN_API_PASSPHRASE,
+            })
+            logger.info("KuCoin client initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing KuCoin client: {e}")
+            self.client = None
+
+    def _check_client(self):
+        """Check if client is available"""
+        if self.client is None:
+            logger.error("KuCoin client not initialized")
+            return False
+        return True
 
     def get_btc_price(self):
+        if not self._check_client():
+            return None
+            
         try:
             ticker = self.client.fetch_ticker('BTC/USDT')
-
-            # for debugging
-            print("This is the ticker", ticker)
             return float(ticker['last'])
         except Exception as e:
             logger.error(f"Error fetching KuCoin BTC price: {e}")
             return None
 
     def check_balance(self):
+        if not self._check_client():
+            return 0.0
+            
         try:
             balance = self.client.fetch_balance()
-
-            # For debugging
-            print("KuCoin Balance: ", balance['total'].get('BTC', 0.0))
             return balance['total'].get('BTC', 0.0)
         except Exception as e:
             logger.error(f"Error fetching KuCoin balance: {e}")
             return 0.0
 
+    def check_usdt_balance(self):
+        if not self._check_client():
+            return 0.0
+            
+        try:
+            balance = self.client.fetch_balance()
+            return balance['total'].get('USDT', 0.0)
+        except Exception as e:
+            logger.error(f"Error fetching KuCoin USDT balance: {e}")
+            return 0.0
+
     def place_sell_order(self, symbol, quantity):
+        if not self._check_client():
+            return None
+            
         try:
             order = self.client.create_order(
                 symbol=symbol,
@@ -72,8 +98,21 @@ class KuCoinHandler:
             logger.error(f"Error placing sell order on KuCoin: {e}")
             return None
 
-    # place buy order
-    def place_buy_order():
-        return
+    def place_buy_order(self, symbol, quantity):
+        if not self._check_client():
+            return None
+            
+        try:
+            order = self.client.create_order(
+                symbol=symbol,
+                type='market',
+                side='buy',
+                amount=quantity
+            )
+            logger.info(f"Buy order placed on KuCoin: {order}")
+            return order
+        except Exception as e:
+            logger.error(f"Error placing buy order on KuCoin: {e}")
+            return None
 
     

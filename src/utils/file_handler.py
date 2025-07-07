@@ -2,6 +2,7 @@ import csv
 import os
 from datetime import datetime
 
+# DEPRECATED: CSV logging will be replaced by SQLite database logging.
 class FileHandler:
     @staticmethod
     def save_to_csv(filename, data, headers=None):
