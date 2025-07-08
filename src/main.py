@@ -219,6 +219,8 @@ def create_flask_app(trader, dry_run):
         logger.info(f"📊 Dashboard accessed by user: {current_user.username}")
         metrics = trade_logger.get_metrics()
         trades = trade_logger.get_trades(since_days=30)
+        # Show last manual trade log if present
+        manual_trade_log = request.args.get('manual_trade_log', None)
         return render_template_string('''
         <!DOCTYPE html>
         <html>
@@ -234,6 +236,7 @@ def create_flask_app(trader, dry_run):
                 .card { margin-top: 4vh; }
                 .metrics-list li { font-size: 1.2em; }
                 .table-container { overflow-x: auto; }
+                .log-box { background: #fff3e0; border: 1px solid #ff9800; color: #bf360c; padding: 1em; margin-bottom: 1em; border-radius: 6px; font-family: monospace; white-space: pre-wrap; }
             </style>
         </head>
         <body>
@@ -251,6 +254,12 @@ def create_flask_app(trader, dry_run):
                     <div class="card white z-depth-3">
                         <div class="card-content">
                             <span class="card-title cyan-text text-accent-4 center-align">Dashboard</span>
+                            {% if manual_trade_log %}
+                            <div class="log-box">
+                                <b>Manual Trade Output:</b><br>
+                                {{ manual_trade_log|safe }}
+                            </div>
+                            {% endif %}
                             <form method="post" action="/run-trade" class="center-align" style="margin-bottom: 2em;">
                                 <button class="btn-large waves-effect waves-light pink accent-3" type="submit">
                                     <i class="material-icons left">autorenew</i>Run Arbitrage Check
@@ -295,14 +304,29 @@ def create_flask_app(trader, dry_run):
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         </body>
         </html>
-        ''', metrics=metrics, trades=trades)
+        ''', metrics=metrics, trades=trades, manual_trade_log=manual_trade_log)
 
     @app.route('/run-trade', methods=['POST'])
     @login_required
     def run_trade():
         logger.info(f"🚀 Manual trade execution triggered by user: {current_user.username}")
-        result = trader.execute_trade(dry_run=dry_run, return_data=True)
-        return redirect(url_for('dashboard'))
+        import io
+        import logging
+        log_stream = io.StringIO()
+        stream_handler = logging.StreamHandler(log_stream)
+        stream_handler.setLevel(logging.INFO)
+        logging.getLogger().addHandler(stream_handler)
+        try:
+            result = trader.execute_trade(dry_run=dry_run, return_data=True)
+        except Exception as e:
+            logger.error(f"Manual trade error: {e}")
+        finally:
+            logging.getLogger().removeHandler(stream_handler)
+        log_contents = log_stream.getvalue()
+        log_stream.close()
+        # Show logs/errors on dashboard
+        from urllib.parse import quote
+        return redirect(url_for('dashboard', manual_trade_log=quote(log_contents)))
 
     return app
 
