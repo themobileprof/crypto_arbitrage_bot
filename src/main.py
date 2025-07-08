@@ -16,6 +16,7 @@ from utils.db import TradeDB
 import sqlite3
 import requests
 from utils.logger import logger
+from urllib.parse import unquote
 
 def check_network_connectivity():
     """Check if we can reach the exchange APIs"""
@@ -219,8 +220,9 @@ def create_flask_app(trader, dry_run):
         logger.info(f"📊 Dashboard accessed by user: {current_user.username}")
         metrics = trade_logger.get_metrics()
         trades = trade_logger.get_trades(since_days=30)
-        # Show last manual trade log if present
         manual_trade_log = request.args.get('manual_trade_log', None)
+        if manual_trade_log:
+            manual_trade_log = unquote(manual_trade_log)
         return render_template_string('''
         <!DOCTYPE html>
         <html>
