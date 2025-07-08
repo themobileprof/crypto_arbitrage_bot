@@ -114,7 +114,7 @@ For production deployment on a server, use Docker with Gunicorn WSGI server:
 
 3. **Create persistent directories:**
     ```bash
-    sudo mkdir -p /var/www/crypto_arbitrage_bot/{db,logs,nginx-logs}
+    sudo mkdir -p /var/www/crypto_arbitrage_bot/{db,logs}
     sudo chown -R $USER:$USER /var/www/crypto_arbitrage_bot
     ```
 
@@ -122,22 +122,20 @@ For production deployment on a server, use Docker with Gunicorn WSGI server:
     ```bash
     # Start both scheduler and web dashboard
     docker compose up -d
-    
-    # Or start with nginx reverse proxy and SSL
-    docker compose --profile with-nginx up -d
     ```
 
 **Services:**
 - `crypto-arbitrage-scheduler`: Runs the trading bot with scheduled arbitrage checks
 - `crypto-arbitrage-web`: Serves the web dashboard using Gunicorn WSGI server
-- `nginx` (optional): Reverse proxy with SSL termination
 
 **Production Features:**
 - Uses Gunicorn WSGI server instead of Flask development server
 - Separate services for trading and web dashboard
 - Automatic health checks and restart policies
 - Persistent data storage with volume mounts
-- Nginx reverse proxy with SSL support
+
+**Note:**
+- If you want to expose the dashboard to the internet, configure your own nginx or reverse proxy manually. This app no longer auto-configures nginx or provides an nginx.conf.
 
 ### Manual Server Setup
 
@@ -195,7 +193,7 @@ For production, replace the self-signed certificate with a proper SSL certificat
     sudo certbot --nginx -d your-domain.com
     ```
 
-2. **Update nginx.conf with your certificate paths**
+2. **Update your nginx config with your certificate paths**
 
 ### Security Considerations
 
