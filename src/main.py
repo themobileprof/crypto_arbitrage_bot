@@ -218,8 +218,16 @@ def create_flask_app(trader, dry_run):
     @login_required
     def dashboard():
         logger.info(f"📊 Dashboard accessed by user: {current_user.username}")
-        metrics = trade_logger.get_metrics()
-        trades = trade_logger.get_trades(since_days=30)
+        
+        # Get metrics and trades with error handling
+        try:
+            metrics = trade_logger.get_metrics()
+            trades = trade_logger.get_trades(since_days=30)
+        except Exception as e:
+            logger.error(f"Error fetching dashboard data: {e}")
+            metrics = {'trade_count': 0, 'total_profit': 0.0, 'avg_profit': 0.0}
+            trades = []
+        
         manual_trade_log = request.args.get('manual_trade_log', None)
         if manual_trade_log:
             manual_trade_log = unquote(manual_trade_log)

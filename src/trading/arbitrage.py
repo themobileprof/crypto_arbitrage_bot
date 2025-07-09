@@ -140,10 +140,22 @@ class ArbitrageTrader:
                     
                     if not dry_run:
                         logger.info("🚀 Executing trades...")
-                        buy_result = self.kucoin.place_buy_order('BTC/USDT', quantity)
-                        sell_result = self.binance.place_sell_order('BTCUSDT', quantity)
-                        logger.info(f"   Buy on KuCoin: {buy_result}")
-                        logger.info(f"   Sell on Binance: {sell_result}")
+                        try:
+                            buy_result = self.kucoin.place_buy_order('BTC/USDT', quantity)
+                            if buy_result is None:
+                                logger.error("❌ Failed to place buy order on KuCoin")
+                                return None if return_data else None
+                            
+                            sell_result = self.binance.place_sell_order('BTCUSDT', quantity)
+                            if sell_result is None:
+                                logger.error("❌ Failed to place sell order on Binance")
+                                return None if return_data else None
+                            
+                            logger.info(f"   Buy on KuCoin: {buy_result}")
+                            logger.info(f"   Sell on Binance: {sell_result}")
+                        except Exception as e:
+                            logger.error(f"❌ Error executing trades: {e}")
+                            return None if return_data else None
                     else:
                         logger.info("🧪 [DRY RUN] Simulated buy on KuCoin and sell on Binance")
                 else:
@@ -167,10 +179,22 @@ class ArbitrageTrader:
                     
                     if not dry_run:
                         logger.info("🚀 Executing trades...")
-                        buy_result = self.binance.place_buy_order('BTCUSDT', quantity)
-                        sell_result = self.kucoin.place_sell_order('BTC/USDT', quantity)
-                        logger.info(f"   Buy on Binance: {buy_result}")
-                        logger.info(f"   Sell on KuCoin: {sell_result}")
+                        try:
+                            buy_result = self.binance.place_buy_order('BTCUSDT', quantity)
+                            if buy_result is None:
+                                logger.error("❌ Failed to place buy order on Binance")
+                                return None if return_data else None
+                            
+                            sell_result = self.kucoin.place_sell_order('BTC/USDT', quantity)
+                            if sell_result is None:
+                                logger.error("❌ Failed to place sell order on KuCoin")
+                                return None if return_data else None
+                            
+                            logger.info(f"   Buy on Binance: {buy_result}")
+                            logger.info(f"   Sell on KuCoin: {sell_result}")
+                        except Exception as e:
+                            logger.error(f"❌ Error executing trades: {e}")
+                            return None if return_data else None
                     else:
                         logger.info("🧪 [DRY RUN] Simulated buy on Binance and sell on KuCoin")
 
