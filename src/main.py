@@ -166,7 +166,7 @@ def create_flask_app(trader, dry_run):
         <body>
         <nav class="pink accent-3">
             <div class="nav-wrapper container">
-                <a href="#" class="brand-logo">Crypto Arbitrage</a>
+                <a href="/" class="brand-logo">Crypto Arbitrage</a>
             </div>
         </nav>
         <div class="container">
@@ -260,7 +260,7 @@ def create_flask_app(trader, dry_run):
         <body>
         <nav class="cyan accent-4">
             <div class="nav-wrapper container">
-                <a href="#" class="brand-logo">Crypto Arbitrage</a>
+                <a href="/" class="brand-logo">Crypto Arbitrage</a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li><a href="/logout"><i class="material-icons left">logout</i>Logout</a></li>
                 </ul>
