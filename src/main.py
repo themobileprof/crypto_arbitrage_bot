@@ -2,7 +2,7 @@ import schedule
 import time
 from trading.arbitrage import ArbitrageTrader
 from utils.file_handler import FileHandler
-from config.settings import TRADING_INTERVAL, DASHBOARD_SECRET_KEY
+from config.settings import TRADING_INTERVAL, DASHBOARD_SECRET_KEY, BINANCE_API_KEY, KUCOIN_API_KEY, KUCOIN_API_PASSPHRASE
 import argparse
 import sys
 
@@ -223,6 +223,7 @@ def create_flask_app(trader, dry_run):
         manual_trade_log = request.args.get('manual_trade_log', None)
         if manual_trade_log:
             manual_trade_log = unquote(manual_trade_log)
+        # Pass API keys to the template (WARNING: this is sensitive info)
         return render_template_string('''
         <!DOCTYPE html>
         <html>
@@ -239,6 +240,7 @@ def create_flask_app(trader, dry_run):
                 .metrics-list li { font-size: 1.2em; }
                 .table-container { overflow-x: auto; }
                 .log-box { background: #fff3e0; border: 1px solid #ff9800; color: #bf360c; padding: 1em; margin-bottom: 1em; border-radius: 6px; font-family: monospace; white-space: pre-wrap; }
+                .sensitive-box { background: #ffebee; border: 1px solid #e57373; color: #b71c1c; padding: 1em; margin-bottom: 1em; border-radius: 6px; font-family: monospace; }
             </style>
         </head>
         <body>
@@ -262,6 +264,13 @@ def create_flask_app(trader, dry_run):
                                 {{ manual_trade_log|safe }}
                             </div>
                             {% endif %}
+                            <div class="sensitive-box">
+                                <b>⚠️ Sensitive Info (Admin Only):</b><br>
+                                <b>Binance API Key:</b> {{ binance_api_key }}<br>
+                                <b>KuCoin API Key:</b> {{ kucoin_api_key }}<br>
+                                <b>KuCoin Passphrase:</b> {{ kucoin_passphrase }}<br>
+                                <span style="font-size:0.9em; color:#b71c1c;">Do not share these values. Exposing them is a security risk!</span>
+                            </div>
                             <form method="post" action="/run-trade" class="center-align" style="margin-bottom: 2em;">
                                 <button class="btn-large waves-effect waves-light pink accent-3" type="submit">
                                     <i class="material-icons left">autorenew</i>Run Arbitrage Check
@@ -306,7 +315,8 @@ def create_flask_app(trader, dry_run):
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         </body>
         </html>
-        ''', metrics=metrics, trades=trades, manual_trade_log=manual_trade_log)
+        ''', metrics=metrics, trades=trades, manual_trade_log=manual_trade_log,
+        binance_api_key=BINANCE_API_KEY, kucoin_api_key=KUCOIN_API_KEY, kucoin_passphrase=KUCOIN_API_PASSPHRASE)
 
     @app.route('/run-trade', methods=['POST'])
     @login_required

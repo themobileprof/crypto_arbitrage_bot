@@ -1,5 +1,7 @@
 # Crypto Arbitrage Bot
 
+[➡️ **Detailed Bot Operation & Architecture**](docs/BOT_DETAILS.md)
+
 This project is a crypto arbitrage bot that trades Bitcoin (BTC) between Binance and KuCoin exchanges to take advantage of price differentials.
 
 ## Features

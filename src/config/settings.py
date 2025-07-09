@@ -26,7 +26,7 @@ TRADING_CAPITAL = 50
 ALLOCATION_PERCENTAGE = 50
 ARBITRAGE_THRESHOLD = 10
 STOP_LOSS_THRESHOLD = -5
-TRADING_INTERVAL = 300  # 5 minutes instead of 5 seconds for testing
+TRADING_INTERVAL = 10  # 10 seconds instead of 5 seconds for testing
 
 # Logging configuration
 LOG_LEVEL = get_env_var('LOG_LEVEL', 'INFO')

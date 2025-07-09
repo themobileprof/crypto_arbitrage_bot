@@ -55,9 +55,15 @@ class PositionManager:
         kucoin_fee = PositionManager.calculate_fees(kucoin_price, 'KuCoin')
         
         if binance_price > kucoin_price:
-            profit = (binance_price - (kucoin_price * (1 + kucoin_fee))) * quantity
+            # Binance is more expensive: Buy on KuCoin, Sell on Binance
+            buy_price = kucoin_price * (1 + kucoin_fee)  # Buy on KuCoin with fees
+            sell_price = binance_price * (1 - binance_fee)  # Sell on Binance with fees
+            profit = (sell_price - buy_price) * quantity
         else:
-            profit = (kucoin_price - (binance_price * (1 + binance_fee))) * quantity
+            # KuCoin is more expensive: Buy on Binance, Sell on KuCoin
+            buy_price = binance_price * (1 + binance_fee)  # Buy on Binance with fees
+            sell_price = kucoin_price * (1 - kucoin_fee)  # Sell on KuCoin with fees
+            profit = (sell_price - buy_price) * quantity
             
         return profit
 
