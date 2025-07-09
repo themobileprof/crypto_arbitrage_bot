@@ -264,13 +264,6 @@ def create_flask_app(trader, dry_run):
                                 {{ manual_trade_log|safe }}
                             </div>
                             {% endif %}
-                            <div class="sensitive-box">
-                                <b>⚠️ Sensitive Info (Admin Only):</b><br>
-                                <b>Binance API Key:</b> {{ binance_api_key }}<br>
-                                <b>KuCoin API Key:</b> {{ kucoin_api_key }}<br>
-                                <b>KuCoin Passphrase:</b> {{ kucoin_passphrase }}<br>
-                                <span style="font-size:0.9em; color:#b71c1c;">Do not share these values. Exposing them is a security risk!</span>
-                            </div>
                             <form method="post" action="/run-trade" class="center-align" style="margin-bottom: 2em;">
                                 <button class="btn-large waves-effect waves-light pink accent-3" type="submit">
                                     <i class="material-icons left">autorenew</i>Run Arbitrage Check
